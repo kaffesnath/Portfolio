@@ -27,4 +27,12 @@ export default class Queue<T> {
             this.items[index] = item;
         }
     }
+
+    getAll(): T[] {
+        return this.items;
+    }
+
+    getLength(): number {
+        return this.items.length;
+    }	
 }

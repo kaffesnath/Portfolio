@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import Ball from './ball';
+import Queue from './queue';
 
 // Dynamically load the P5 wrapper (client-only)
 const ReactP5Wrapper = dynamic(() => import('react-p5-wrapper').then(mod => mod.ReactP5Wrapper), {
@@ -11,7 +12,7 @@ const ReactP5Wrapper = dynamic(() => import('react-p5-wrapper').then(mod => mod.
 
 // Your P5 sketch
 const sketch = (p5: any) => {
-    const activeBalls: Ball[] = [];
+    const balls = new Queue<Ball>(10);
     const gravity = 0.2;
     const COR = 0.2; // Coefficient of restitution (bounciness)
     let trajectory: number[] = [0, 0];
@@ -22,7 +23,7 @@ const sketch = (p5: any) => {
     p5.draw = () => {
         // Update and display all balls
         p5.background(240);
-        updateBalls(p5, activeBalls);
+        updateBalls(p5, balls);
     };
 
     p5.mousePressed = () => {	
@@ -35,23 +36,19 @@ const sketch = (p5: any) => {
         let vx = (p5.mouseX - trajectory[0]) * -0.1;
         let vy = (p5.mouseY - trajectory[1]) * -0.1;
         ball.setVelocity(vx, vy);
-        activeBalls.push(ball);
+        balls.push(ball);
         trajectory[0] = 0;
         trajectory[1] = 0;
     }
 
-    function updateBalls(p5: any, balls: Ball[]) {
-        applyGravity(balls);
-        for (let i = 0; i < balls.length; i++) {
-            wallCollision(balls[i]);
-            balls[i].move();
-            balls[i].display(p5);
-        }
-    }
-
-    function applyGravity(balls: Ball[]) {
-        for (let i = 0; i < balls.length; i++) {
-            balls[i].setVelocity(0, gravity);
+    function updateBalls(p5: any, balls: Queue<Ball>) {
+        for (let i = 0; i < balls.getLength(); i++) {
+            let ball = balls.peek(i);
+            ball.setVelocity(0, gravity);
+            wallCollision(ball);
+            ball.move();
+            ball.display(p5);
+            balls.replace(i, ball);
         }
     }
 
