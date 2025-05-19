@@ -1,25 +1,32 @@
+import Queue from "./queue";
+
 export default class Ball{
-    x: number;
-    y: number;
+    position: Queue<[number, number]>;
     r: number;
     vx: number;
     vy: number;
 
     constructor(x: number, y: number, r: number) {
-        this.x = x;
-        this.y = y;
+        this.position = new Queue(2);
+        // push positions twice to populate queue
+        this.position.push([x, y]);
+        this.position.push([x, y]);
         this.r = r;
-        this.vx = 0
+        this.vx = 0;
         this.vy = 0;
     }
 
     move() {
-        this.x += this.vx;
-        this.y += this.vy;
+        let pos = this.position.peek(0);
+        let x = pos[0] + this.vx;
+        let y = pos[1] + this.vy;
+        this.position.push([x, y]);
+
     }
 
     display(p5: any) {
-        p5.ellipse(this.x, this.y, this.r * 2);
+        let pos = this.position.peek(0);
+        p5.ellipse(pos[0], pos[1], this.r * 2);
     }
 
     setVelocity(vx: number, vy: number) {

@@ -13,6 +13,7 @@ const ReactP5Wrapper = dynamic(() => import('react-p5-wrapper').then(mod => mod.
 const sketch = (p5: any) => {
     const activeBalls: Ball[] = [];
     const gravity = 0.2;
+    const COR = 0.2; // Coefficient of restitution (bounciness)
     let trajectory: number[] = [0, 0];
     p5.setup = () => {
         p5.createCanvas(400, 400);
@@ -27,7 +28,6 @@ const sketch = (p5: any) => {
     p5.mousePressed = () => {	
         trajectory[0] = p5.mouseX;
         trajectory[1] = p5.mouseY;
-        p5.line(trajectory[0], trajectory[1], p5.mouseX, p5.mouseY);
     }
 
     p5.mouseReleased = () => {
@@ -43,9 +43,7 @@ const sketch = (p5: any) => {
     function updateBalls(p5: any, balls: Ball[]) {
         applyGravity(balls);
         for (let i = 0; i < balls.length; i++) {
-            wallCollision(balls[i], p5);
-        }
-        for (let i = 0; i < balls.length; i++) {
+            wallCollision(balls[i]);
             balls[i].move();
             balls[i].display(p5);
         }
@@ -57,22 +55,31 @@ const sketch = (p5: any) => {
         }
     }
 
-    function wallCollision(ball: Ball, p5: any) {
-        if (ball.y + ball.r >= p5.height) {
-            ball.y = p5.height - ball.r;
-            ball.vy *= -1 + gravity;
+    function wallCollision(ball: Ball) {
+        let pos = ball.position.peek(0);
+        let prevPos = ball.position.peek(1);
+        let r = ball.r;
+        // collision update boolean
+        let collision = false;
+        if (pos[0] + r >= p5.width) {
+            ball.vx *= -1 + COR;
+            collision = true;
         }
-        if (ball.y - ball.r <= 0) {
-            ball.y = ball.r;
-            ball.vy *= -1 + gravity;
+        if (pos[0] - r <= 0) {
+            ball.vx *= -1 + COR;
+            collision = true;
         }
-        if (ball.x + ball.r >= p5.width) {
-            ball.x = p5.width - ball.r;
-            ball.vx *= -1 + gravity;
+        if (pos[1] + r >= p5.height) {
+            ball.vy *= -1 + COR;
+            collision = true;
         }
-        if (ball.x - ball.r <= 0) {
-            ball.x = ball.r;
-            ball.vx *= -1 + gravity;
+        /*if (pos[1] - r <= 0) {
+            ball.vy *= -1 + COR;
+            collision = true;
+        }*/
+        // if collision, set position to previous position
+        if (collision) {
+            ball.position.replace(0, prevPos);
         }
     }
 };
