@@ -16,11 +16,11 @@ export default class Ball{
         this.vy = 0;
     }
 
-    move() {
+    move(gravity: number) {
+        // apply gravity
+        this.setVelocity(0, gravity);
         let pos = this.position.peek(0);
-        let x = pos[0] + this.vx;
-        let y = pos[1] + this.vy;
-        this.position.push([x, y]);
+        this.position.push([pos[0] + this.vx, pos[1] + this.vy]);
 
     }
 
@@ -30,7 +30,18 @@ export default class Ball{
     }
 
     setVelocity(vx: number, vy: number) {
+        if (Math.abs(vx) < 0.1) {
+            vx = 0;
+        }
+        if (Math.abs(vy) < 0.1) {
+            vy = 0;
+        }
         this.vx += vx;
         this.vy += vy;
+    }
+
+    updateVelocity(vx: number, vy: number) {
+        this.vx = vx;
+        this.vy = vy;
     }
 }
