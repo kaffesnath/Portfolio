@@ -3,10 +3,14 @@ import Queue from "./queue";
 export default class Ball{
     position: Queue<[number, number]>;
     r: number;
+    m: number; 
     vx: number;
     vy: number;
+    mouseOver: Function | null = null;
+    interaction: boolean = false; // flag for interaction state
+    img: p5.Image;
 
-    constructor(x: number, y: number, r: number) {
+    constructor(x: number, y: number, r: number, img: p5.Image) {
         this.position = new Queue(2);
         // push positions twice to populate queue
         this.position.push([x, y]);
@@ -14,18 +18,35 @@ export default class Ball{
         this.r = r;
         this.vx = 0;
         this.vy = 0;
+        this.m = Math.floor(Math.PI * r * r / 1000); // mass is calculated based on area, divided by 1000 for scaling
+        this.img = img;
     }
 
-    move(gravity: number) {
+    move(gravity: number, friction: number) {
         // apply gravity
-        this.setVelocity(0, gravity);
+        if (!this.interaction) {
+            //this.setVelocity(0, gravity);
+        }
         let pos = this.position.peek(0);
-        this.position.push([pos[0] + this.vx, pos[1] + this.vy]);
+        this.position.push([pos[0] + this.vx * friction, pos[1] + this.vy * friction]);
 
     }
+
+    mouseOverSet(func: Function) {
+        //creates a callback for mouseOver events
+        this.mouseOver = func;
+    }
+        
 
     display(p5: any) {
         let pos = this.position.peek(0);
+        // if mouse is over the ball, call the mouseOver function
+        if (this.mouseOver && p5.dist(p5.mouseX, p5.mouseY, pos[0], pos[1]) < this.r || this.interaction) {
+            this.mouseOver();
+        } else {
+            p5.strokeWeight(2);
+        }
+        p5.texture(this.img);
         p5.ellipse(pos[0], pos[1], this.r * 2);
     }
 
@@ -41,6 +62,9 @@ export default class Ball{
     }
 
     updateVelocity(vx: number, vy: number) {
+        if(this.interaction) {
+            return;
+        }
         this.vx = vx;
         this.vy = vy;
     }
