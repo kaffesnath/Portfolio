@@ -22,13 +22,12 @@ export default class Ball{
         this.img = img;
     }
 
-    move(gravity: number, friction: number) {
-        // apply gravity
-        if (!this.interaction) {
-            //this.setVelocity(0, gravity);
-        }
+    move(friction: number) {
         let pos = this.position.peek(0);
-        this.position.push([pos[0] + this.vx * friction, pos[1] + this.vy * friction]);
+        // apply friction
+        this.vx *= friction;
+        this.vy *= friction;
+        this.position.push([pos[0] + this.vx, pos[1] + this.vy]);
 
     }
 
