@@ -10,57 +10,121 @@ const ReactP5Wrapper = dynamic(() => import('react-p5-wrapper').then(mod => mod.
   loading: () => <div>Loading...</div>,
 });
 
-// Your P5 sketch
+// Randomised ball sizes and positions
+const sizes = [50, 60, 70]
+//Store images globally and supply them to objects
+let temp: any;
+
+
 const sketch = (p5: any) => {
     const balls = new Queue<Ball>(10);
-    const gravity = 0.1;
+    const gravity = 0.2;
+    const friction = 0.90;
     const COR = 0.9; // Coefficient of restitution (bounciness)
     let trajectory: number[] = [0, 0];
+    let interacted = -1;
+
+    p5.preload = () => {
+        //Preloads images of projects for use within the balls
+        temp = p5.loadImage('/img/logo.png')
+    }
+
     p5.setup = () => {
-        p5.createCanvas(400, 400);
+        p5.createCanvas(1000, 1000, p5.WEBGL);
+        
+        p5.frameRate(60);
+        for(let i = 0; i < 5; i++) {
+            // Randomize ball size and position
+            let r = sizes[Math.floor(Math.random() * sizes.length)];
+            let x = p5.random(r, p5.width - r);
+            let y = p5.random(r, p5.height - r);
+            // Create a new ball with random size and position
+            let ball = new Ball(x, y, r, temp);
+            ball.mouseOverSet(() => {p5.strokeWeight(8);})
+            balls.push(ball);
+        }
     };
 
     p5.draw = () => {
         // Update and display all balls
         p5.background(240);
+        p5.push();
+        p5.translate(-p5.width / 2, -p5.height / 2);
         updateBalls(p5, balls);
+        // Draw trajectory line if a ball is interacted with
+        drawTrajectory(p5);
+        p5.pop();
     };
 
-    p5.mousePressed = () => {	
-        trajectory[0] = p5.mouseX;
-        trajectory[1] = p5.mouseY;
+    p5.mousePressed = () => {
+        for(let i = 0; i < balls.getLength(); i++) {
+            let ball = balls.peek(i);
+            // Check if the mouse is within the bounds of the ball
+            let pos = ball.position.peek(0);
+            let d = p5.dist(p5.mouseX, p5.mouseY, pos[0], pos[1]);
+            if (d < ball.r) {
+                // If the mouse is pressed on a ball, set its velocity to zero and store the trajectory
+                ball.updateVelocity(0, 0);
+                trajectory = [pos[0], pos[1]];
+                interacted = i; // Store the index of the interacted ball to hold stroke weight
+                ball.interaction = true; // Set interaction flag to true
+            }
+        }
     }
 
     p5.mouseReleased = () => {
-        let ball = new Ball(trajectory[0], trajectory[1], 20);
-        let vx = (p5.mouseX - trajectory[0]) * -gravity / 2;
-        let vy = (p5.mouseY - trajectory[1]) * -gravity / 2;
-        ball.setVelocity(vx, vy);
-        balls.push(ball);
-        trajectory[0] = 0;
-        trajectory[1] = 0;
+        if (interacted == -1) return; // If no ball was interacted with, do nothing
+        if (p5.dist(p5.mouseX, p5.mouseY, trajectory[0], trajectory[1]) < balls.peek(interacted).r) {
+            // If mouse is released close to the trajectory point, do nothing
+            balls.peek(interacted).interaction = false;
+            console.log("blah");
+            interacted = -1; // Reset interacted index
+            return;
+        }
+        //calculate trajectory vector from the trajectory point to the mouse position
+        let ball = balls.peek(interacted);
+        //calculates velocity based on drag direction and size of ball for scaling
+        let vx = (p5.mouseX - trajectory[0]) * (gravity / ball.m * 2);
+        let vy = (p5.mouseY - trajectory[1]) * (gravity / ball.m * 2);
+        //reset ball to be uninteracted for next interaction. Also removes velocity restriction for update.
+        balls.peek(interacted).interaction = false;
+        interacted = -1;
+        ball.updateVelocity(vx, vy);
     }
-
+        
     function updateBalls(p5: any, balls: Queue<Ball>) {
         for (let i = 0; i < balls.getLength(); i++) {
             let ball = balls.peek(i);
+
+            // Check for collisions with other balls and walls
             for (let j = i + 1; j < balls.getLength(); j++) {
                 let other = balls.peek(j);
                 ballCollision(ball, other);
             }
             wallCollision(ball);
-            ball.move(gravity);
+            ball.move(gravity, friction);
             ball.display(p5);
             balls.replace(i, ball);
         }
     }
 
+    function drawTrajectory(p5: any) {
+        // Draw trajectory line from the last interacted ball to the mouse position
+        if (interacted != -1) {
+            let ball = balls.peek(interacted);
+            let pos = ball.position.peek(0);
+            p5.strokeWeight(2);
+            p5.line(pos[0], pos[1], p5.mouseX, p5.mouseY);
+        }
+    }
+
     function wallCollision(ball: Ball) {
         let pos = ball.position.peek(0);
-        let prevPos = ball.position.peek(1);
         let r = ball.r;
         // collision update boolean
         let collision = false;
+
+        //each wall reverses its respective velocity, and sets the flag for returning to previous position
         if (pos[0] + r >= p5.width) {
             ball.vx *= -COR;
             collision = true;
@@ -73,13 +137,13 @@ const sketch = (p5: any) => {
             ball.vy *= -COR;
             collision = true;
         }
-        /*if (pos[1] - r <= 0) {
-            ball.vy *= COR;
+        if (pos[1] - r <= 0) {
+            ball.vy *= -COR;
             collision = true;
-        }*/
+        }
         // if collision, set position to previous position
         if (collision) {
-            ball.position.replace(0, prevPos);
+            ball.position.replace(0, ball.position.peek(1));
         }
     }
 
@@ -93,9 +157,9 @@ const sketch = (p5: any) => {
     function ballCollision(ball: Ball, other: Ball) {
         let pos1 = ball.position.peek(0);
         let pos2 = other.position.peek(0);
-        //initial mass is 1 each, will be stored in balls
-        let m1 = 1
-        let m2 = 1;
+        //mass is calculated in balls based on area
+        let m1 = ball.m;
+        let m2 = other.m;
         // positions for balls
         let x1 = p5.createVector(pos1[0], pos1[1]);
         let x2 = p5.createVector(pos2[0], pos2[1]);
@@ -136,7 +200,6 @@ const sketch = (p5: any) => {
             other.updateVelocity(v2f.x, v2f.y);
         }
     }
-    
 };
 
 export default function Page() {
