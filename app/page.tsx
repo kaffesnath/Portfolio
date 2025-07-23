@@ -10,7 +10,7 @@ const ReactP5Wrapper = dynamic(() => import('react-p5-wrapper').then(mod => mod.
 });
 
 export default function Page() {
-    //create empty container ref to hold the P5 canvas
+    //create empty container reference to hold the P5 canvas for mobile usage
     const containerRef = useRef(null);
     // Prevent touch events from scrolling the page
     useEffect(() => {
@@ -30,9 +30,18 @@ export default function Page() {
 
   }, []);
 
+  /**Font Colour: #231f20
+   * Background Colour: #ffffff
+   * Accent font colour: #2e6da8
+   * Accent background colour: #f3f3f3 
+   */
+
     return (
-        <div ref={containerRef} className="touch-none overflow-hidden h-screen">
-            <ReactP5Wrapper sketch={sketch}/>
+        <div id="mainBody" className="h-dvh w-full overflow-hidden relative">
+            <div className="font-firmaAlt text-title font-[1000] flex h-1/10 bg-[#f3f3f3] text-[#231f20] items-center justify-center">Nathan Kaffes.</div>
+            <div ref={containerRef} className="touch-none overflow-hidden h-screen relative">
+                <ReactP5Wrapper sketch={sketch}/>
+            </div>
         </div>
     );
 }

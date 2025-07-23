@@ -12,6 +12,7 @@ export default class Ball{
 
     constructor(x: number, y: number, r: number, img: p5.Image) {
         this.position = new Queue(2);
+
         // push positions twice to populate queue
         this.position.push([x, y]);
         this.position.push([x, y]);
@@ -23,7 +24,7 @@ export default class Ball{
     }
 
     move(friction: number) {
-        let pos = this.position.peek(0);
+        const pos = this.position.peek(0);
         // apply friction
         this.vx *= friction;
         this.vy *= friction;
@@ -38,7 +39,7 @@ export default class Ball{
         
 
     display(p5: any) {
-        let pos = this.position.peek(0);
+        const pos = this.position.peek(0);
         // if mouse is over the ball, call the mouseOver function
         if (this.mouseOver && p5.dist(p5.mouseX, p5.mouseY, pos[0], pos[1]) < this.r || this.interaction) {
             this.mouseOver();

@@ -1,0 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope");
+@theme {
+    --font-firmaAlt: 'Manrope', sans-serif;
+    --text-title: 3vh ;
+}
+@import "tailwindcss";
