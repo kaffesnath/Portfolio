@@ -3,14 +3,20 @@ import Ball from './ball';
 import Queue from './queue';
 
 // Randomised ball sizes and positions
-const sizes = [50, 60, 70]
 const headerHeightScale = 10; 
 //Store images globally and supply them to objects
-let temp: any;
+const img: any[] = [];
+const sizes: number[] = [];
 
 //find size of window sketch is being loaded into
 function findWindowSize() {
     if (typeof window !== 'undefined') {
+        const maxSize = Math.min(window.innerWidth, window.innerHeight) / 7.5; // Max size is 1/10th of the smaller dimension
+        const minSize = maxSize / 2; // Minimum size is 1/2 of the max size
+        for(let i = 0; i < 5; i++) {
+            // input 5 evenly spaced ball sizes into the array
+            sizes.push(Math.floor(minSize + (i * (maxSize - minSize) / 4))); // 5 sizes from min to max
+        }
         return {
             width: window.innerWidth,
             height: window.innerHeight - (window.innerHeight / headerHeightScale),
@@ -36,6 +42,7 @@ export default function sketch(p5: any) {
     const balls = new Queue<Ball>(10);
     const friction = 0.99;
     const velScaling = 0.2; // Scaling factor for velocity
+    const mScaling = 5; // Scaling factor for mass based on area
     const COR = 0.9; // Coefficient of restitution (bounciness)
     let mainCanvas: any; // Main canvas for the sketch
     let grid: any; // Graphics object for the grid background
@@ -44,8 +51,12 @@ export default function sketch(p5: any) {
     let interacted = -1;
 
     p5.preload = () => {
-        //Preloads images of projects for use within the balls
-        temp = p5.loadImage('/img/logo.png')
+        //Preloads images of projects for use in order of magnitude chosen, further development would see the size of the balls be dictated by project size
+        img.push(p5.loadImage('/img/proj_1.png'))
+        img.push(p5.loadImage('/img/proj_5.png'))
+        img.push(p5.loadImage('/img/proj_4.png'))
+        img.push(p5.loadImage('/img/proj_2.png'))
+        img.push(p5.loadImage('/img/proj_3.png'))
     }
 
     p5.setup = () => {
@@ -54,12 +65,12 @@ export default function sketch(p5: any) {
         p5.frameRate(60);
         for(let i = 0; i < 5; i++) {
             // Randomize ball size and position
-            const r = sizes[Math.floor(Math.random() * sizes.length)];
+            const r = sizes[i];
             const x = p5.random(r, p5.width - r);
             const y = p5.random(r, p5.height - r);
             // Create a new ball with random size and position
-            const ball = new Ball(x, y, r, temp);
-            ball.mouseOverSet(() => {p5.strokeWeight(8);})
+            const ball = new Ball(x, y, r, img[i]);
+            ball.mouseOverSet(() => {p5.strokeWeight(4)}); // Set mouse over effect to draw vignette
             balls.push(ball);
         }
     };
@@ -105,8 +116,8 @@ export default function sketch(p5: any) {
         }
         const ball = balls.peek(interacted);
         //calculates velocity based on drag direction and size of ball for scaling with a 1/5 scaling for velocity overall
-        const vx = (p5.mouseX - trajectory[0]) * (velScaling / ball.m * 2);
-        const vy = (p5.mouseY - trajectory[1]) * (velScaling / ball.m * 2);
+        const vx = (p5.mouseX - trajectory[0]) * (velScaling / ball.m * mScaling);
+        const vy = (p5.mouseY - trajectory[1]) * (velScaling / ball.m * mScaling);
         //reset ball to be uninteracted for next interaction. Also removes velocity restriction for update.
         balls.peek(interacted).interaction = false;
         interacted = -1;
@@ -125,7 +136,7 @@ export default function sketch(p5: any) {
             resizeTimer = null;
         }, 200); // Delay to allow for resizing
     };
-        
+
     function updateBalls(p5: any, balls: Queue<Ball>) {
         for (let i = 0; i < balls.getLength(); i++) {
             const ball = balls.peek(i);
