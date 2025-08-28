@@ -1,6 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope");
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @theme {
-    --font-firmaAlt: 'Manrope', sans-serif;
+    --font-lexend: 'Lexend', sans-serif;
     --text-title: 3vh ;
 }
 @import "tailwindcss";
