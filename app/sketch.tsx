@@ -2,6 +2,16 @@ import { resize } from 'p5';
 import Ball from './ball';
 import Queue from './queue';
 
+// importing icons from FontAwesome
+import { icon } from '@fortawesome/fontawesome-svg-core' // Importing icons
+import { faSquareGithub } from '@fortawesome/free-brands-svg-icons'
+import { faLinkedin } from '@fortawesome/free-brands-svg-icons'
+
+// Constants for the sketch, json for information and the icons for links
+const projectJsonPath = '/json/projects.json'; 
+const githubIcon = icon(faSquareGithub).html[0];
+const linkedinIcon = icon(faLinkedin).html[0];
+
 // Randomised ball sizes and positions
 const headerHeightScale = 10; 
 //Store images globally and supply them to objects
@@ -11,7 +21,7 @@ const sizes: number[] = [];
 //find size of window sketch is being loaded into
 function findWindowSize() {
     if (typeof window !== 'undefined') {
-        const maxSize = Math.min(window.innerWidth, window.innerHeight) / 7.5; // Max size is 1/10th of the smaller dimension
+        const maxSize = Math.min(window.innerWidth, window.innerHeight) / 6; // Max size is 1/10th of the smaller dimension
         const minSize = maxSize / 2; // Minimum size is 1/2 of the max size
         for(let i = 0; i < 5; i++) {
             // input 5 evenly spaced ball sizes into the array
@@ -25,14 +35,42 @@ function findWindowSize() {
     return {width: 800, height: 600}; // Default size for SSR
 }
 
-function makePopup(id: number) {
+function makePopup(id: number, onClose?: () => void) {
     // Create a popup for the ball with the given id
-    console.log(`Creating popup for ball ${id}`);
-    const popup = document.createElement('div');
-    popup.id = `popup-${id}`;
-    popup.className = "absolute top-[10%] left-[10%] w-[20%] h-[20%] bg-white border border-gray-400 shadow-md text-black z-50";
-    popup.innerHTML = `<h2>Ball ${id}</h2><p>This is a popup for ball ${id}.</p>`;
-    document.getElementById('mainBody')?.appendChild(popup);
+    fetch(projectJsonPath)
+        .then(response => response.json())
+        .then(data => {
+            const project = data.projects.find((proj: any) => proj.id === id);
+            if (project) {
+                //determine if a popup already exists, if so do not create another
+                if (document.querySelector('.popup')) return;
+                if (document.querySelector('.overlay')) return;
+                const overlay = document.createElement('div');
+                overlay.className = 'overlay fixed inset-0 bg-black opacity-50 z-40';
+                document.body.appendChild(overlay);
+
+                // Create popup element
+                const popup = document.createElement('div');
+                popup.className = 'popup fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#e9e9e9] rounded-lg shadow-lg p-6 w-11/12 h-8/12 max-w-4xl z-50';
+                popup.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <a class="text-3xl" href="${project.link}" target="_blank" rel="noopener noreferrer">${project.linktype === 0 ? githubIcon : linkedinIcon}</a>
+                        <h2 class="font-lexend font-semibold text-subtitle text-[#231f20] text-center">${project.name}</h2>
+                        <button class="close-button text-3xl text-gray-500 hover:text-gray-700">&times;</button>
+                    </div>
+                    <p class="font-lexend font-regular md:text-body text-mobile text-[#494949] mb-4">${project.description}</p>
+                `;
+                document.body.appendChild(popup);
+
+                const closeButton = popup.querySelector('.close-button') as HTMLElement;
+                closeButton.onclick = () => {
+                    document.body.removeChild(overlay);
+                    document.body.removeChild(popup);
+                    if (onClose) onClose();
+                };
+            }
+        })
+        .catch(error => console.error('Error loading project data:', error));
 }
 
 const { width, height } = findWindowSize();
@@ -40,23 +78,24 @@ const { width, height } = findWindowSize();
 
 export default function sketch(p5: any) {
     const balls = new Queue<Ball>(10);
-    const friction = 0.99;
+    const friction = 0.99; // Friction coefficient to slow down balls over time
     const velScaling = 0.2; // Scaling factor for velocity
-    const mScaling = 5; // Scaling factor for mass based on area
+    const mScaling = 4; // Scaling factor for mass based on area
     const COR = 0.9; // Coefficient of restitution (bounciness)
-    let mainCanvas: any; // Main canvas for the sketch
-    let grid: any; // Graphics object for the grid background
-    let trajectory: number[] = [0, 0];
+    let mainCanvas: any; 
+    let grid: any; // Graphics object for the grid background, is redrawn on resize on a timer
+    let trajectory: number[] = [0, 0]; // Starting point of the trajectory line, stores on mouse press
     let resizeTimer: ReturnType<typeof setTimeout> | null = null; // Timer for resizing the canvas
-    let interacted = -1;
+    let interacted = -1; // Index of the ball currently being interacted with, -1 when no interaction
+    let mouseControl = true; // Flag to enable/disable mouse control
 
     p5.preload = () => {
         //Preloads images of projects for use in order of magnitude chosen, further development would see the size of the balls be dictated by project size
         img.push(p5.loadImage('/img/proj_1.png'))
-        img.push(p5.loadImage('/img/proj_5.png'))
-        img.push(p5.loadImage('/img/proj_4.png'))
         img.push(p5.loadImage('/img/proj_2.png'))
         img.push(p5.loadImage('/img/proj_3.png'))
+        img.push(p5.loadImage('/img/proj_4.png'))
+        img.push(p5.loadImage('/img/proj_5.png'))
     }
 
     p5.setup = () => {
@@ -69,8 +108,8 @@ export default function sketch(p5: any) {
             const x = p5.random(r, p5.width - r);
             const y = p5.random(r, p5.height - r);
             // Create a new ball with random size and position
-            const ball = new Ball(x, y, r, img[i]);
-            ball.mouseOverSet(() => {p5.strokeWeight(4)}); // Set mouse over effect to draw vignette
+            const ball = new Ball(x, y, r, img[i], i);
+            ball.mouseOverSet(() => {if(!mouseControl) return; p5.strokeWeight(4)}); // Set mouse over effect to draw vignette, fails if mouseControl is disabled
             balls.push(ball);
         }
     };
@@ -92,6 +131,7 @@ export default function sketch(p5: any) {
     };
 
     p5.mousePressed = p5.touchStarted = () => {
+        if (!mouseControl) return;
         for(let i = 0; i < balls.getLength(); i++) {
             const ball = balls.peek(i);
             const pos = ball.position.peek(0);
@@ -110,8 +150,11 @@ export default function sketch(p5: any) {
         if (p5.dist(p5.mouseX, p5.mouseY, trajectory[0], trajectory[1]) < balls.peek(interacted).r) {
             // If mouse is released close to the trajectory point, treat as click and open pop-up
             balls.peek(interacted).interaction = false;
-            makePopup(interacted);
+            // Create popup, using interacted balls id to retrieve json information and supplies runnable to re-enable mouse control on close
+            makePopup(balls.peek(interacted).id, () => {mouseControl = true;});
+            mouseControl = false; // Disable mouse control while popup is open
             interacted = -1; // Reset interacted index
+
             return;
         }
         const ball = balls.peek(interacted);

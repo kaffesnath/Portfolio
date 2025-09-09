@@ -1,0 +1,45 @@
+{
+    "projects": [
+        {
+            "id": 0,
+            "name": "Chaps Challenge",
+            "description": "This project was taken on during my second year of university for the SWEN225 course. The goal was to develop a game in Java in a group using Object Oriented design processes and Java 8 features like streams and lambda expressions. The project was split into modular sections where each member of the group was responsible for a different aspect of the project. My task was to develop the Renderer module, which draws the map onto the screen using camera controls and layering of tiles. This module was also tasked with creating pre-made lambda expressions for runnable sounds to give to the Domain module, which would play these sounds in required sections of the gameplay. This project taught invaluable experience in Project Management, Team Building but also fundamental Development tasks like Project Design and Intention, Version Control and basic Game Development.",
+            "image": "",
+            "link": "https://github.com/kaffesnath/Chaps-Challenge",
+            "linktype": 0
+        },
+        {
+            "id": 1,
+            "name": "About Me",
+            "description": "My name is Nathan Kaffes and I am a Software Engineer based in Wellington, New Zealand. I have a passion for developing innovative and unique solutions including but not limited to Machine Learning Techniques, Web Development and Game Development. I enjoy socialising with friends and family, playing video games and going to the gym are big social events for myself and make up a bulk of my free time. Software became an important part of my life early on as the world evolved with me and solidified my love for technology and its applications.",
+            "image": "",
+            "link": "https://www.linkedin.com/in/nathan-kaffes/",
+            "linktype": 1
+        },
+        {
+            "id": 2,
+            "name": "Image Classifier CNN",
+            "description": "This project was taken on during my final year of University for the AIML421 course. The goal was to develop a Convolutional Neural Network (CNN) that could accurately classify images of red produce, specifically cherries, strawberries, and tomatoes. The project involved several key steps, including data collection, preprocessing, model development, training, and evaluation. The CNN architecture was designed with multiple convolutional and pooling layers to effectively capture spatial hierarchies in the images. The model was developed in Python using the TensorFlow and PyTorch libraries. The model achieved a high accuracy rate on the validation set. The final model was then tested on a separate test set to evaluate its performance in real-world scenarios to great success. More details and the complete code can be found on the linked Github repository.",
+            "image": "",
+            "link": "https://github.com/kaffesnath/AIML421-Capstone",
+            "linktype": 0
+        },
+        {
+            "id": 3,
+            "name": "Realm Render",
+            "description": "This project was undertaken in my penultimate year of University for the ENGR302 course. The goal was to produce a project in a group, helmed by students in their entirety. Realm Render is a web application that allows users to randomly generate a dungeon for use within the tabletop game Dungeons and Dragons, users can interact with tokens and edit character sheets to have them take on the users roles. This project not only taught invaluable experience in Project Management, Team Building but also fundamental Development tasks like Project Design and Intention, Web Development, Version Control and Database Management and Server Hosting.",
+            "image": "",
+            "link": "https://github.com/kaffesnath/ENGR302-Project",
+            "linktype": 0
+        },
+        {
+            "id": 4,
+            "name": "Sentiment Analysis using Genetic Programming",
+            "description": "This project was a full year project taken on in my final year of University for the ENGR489 course. This project was a predominantly research-focused project in which the Natural Language Processing problem of Sentiment Analysis was to be attempted to be solved using Genetic Programming (GP) to produce a more interpretable result than standard methods, eg. Convolutional Neural Networks, or CNNS. The main difficulty with this project was finding past research into the use of GP for Sentiment Analysis and synthesising this research to create a model that performed comparably to standard methods. The project was developed using Python with the DEAP library and synthesised research on multiple tools used for Sentiment Analysis, namely the VADER lexicon and Scikit-Learn models for feature generation. The model developed showed promising results in terms of its scope and defined purpose. The complete code, along with the research paper and presentation linked to this project can be found on the linked Github repository.",
+            "image": "",
+            "link": "https://github.com/kaffesnath/ENGR489_Project",
+            "linktype": 0
+        }
+    ]
+
+}

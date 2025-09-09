@@ -9,9 +9,11 @@ export default class Ball{
     mouseOver: Function | null = null;
     interaction: boolean = false; // flag for interaction state
     img: p5.Image;
+    id: number;
 
-    constructor(x: number, y: number, r: number, img: p5.Image) {
+    constructor(x: number, y: number, r: number, img: p5.Image, id: number) {
         this.position = new Queue(2);
+        this.id = id;
 
         // push positions twice to populate queue
         this.position.push([x, y]);

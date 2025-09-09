@@ -2,5 +2,8 @@
 @theme {
     --font-lexend: 'Lexend', sans-serif;
     --text-title: 3vh ;
+    --text-subtitle: 2vh;
+    --text-body: 1.75vh ;
+    --text-mobile: 2.5vw ;
 }
 @import "tailwindcss";
