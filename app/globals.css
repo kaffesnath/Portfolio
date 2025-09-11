@@ -4,6 +4,37 @@
     --text-title: 3vh ;
     --text-subtitle: 2vh;
     --text-body: 1.75vh ;
-    --text-mobile: 2.5vw ;
+    --text-mobile: 3vw ;
+}
+@keyframes rise {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 4px));
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes fade {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 4px));
+  }
+}
+
+.animate-rise {
+  animation: rise 0.4s ease-out forwards;
+}
+.animate-fade {
+  animation: fade 0.15s ease-out forwards;
 }
 @import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

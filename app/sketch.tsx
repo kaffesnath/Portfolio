@@ -20,6 +20,7 @@ const sizes: number[] = [];
 
 //find size of window sketch is being loaded into
 function findWindowSize() {
+    sizes.length = 0; // reset sizes array on resize
     if (typeof window !== 'undefined') {
         const maxSize = Math.min(window.innerWidth, window.innerHeight) / 6; // Max size is 1/10th of the smaller dimension
         const minSize = maxSize / 2; // Minimum size is 1/2 of the max size
@@ -46,27 +47,38 @@ function makePopup(id: number, onClose?: () => void) {
                 if (document.querySelector('.popup')) return;
                 if (document.querySelector('.overlay')) return;
                 const overlay = document.createElement('div');
-                overlay.className = 'overlay fixed inset-0 bg-black opacity-50 z-40';
+                overlay.className = 'overlay fixed inset-0 bg-white/30 backdrop-blur-xs z-40';
                 document.body.appendChild(overlay);
 
                 // Create popup element
                 const popup = document.createElement('div');
-                popup.className = 'popup fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#e9e9e9] rounded-lg shadow-lg p-6 w-11/12 h-8/12 max-w-4xl z-50';
+                popup.className = 'popup fixed top-1/2 left-1/2 transform bg-[#e9e9e9] rounded-lg shadow-lg p-6 w-11/12 h-8/12 max-w-4xl z-50 animate-rise';
+                //uses linktype to determine whether link should show, and which icon to use
+                const link = project.linktype === 2 ? '' :  `<a class="text-3xl hover:text-[#2e6da8]" href="${project.link}" target="_blank" rel="noopener noreferrer">${project.linktype === 0 ? githubIcon : linkedinIcon}</a>`
                 popup.innerHTML = `
-                    <div class="flex justify-between items-center mb-4">
-                        <a class="text-3xl" href="${project.link}" target="_blank" rel="noopener noreferrer">${project.linktype === 0 ? githubIcon : linkedinIcon}</a>
-                        <h2 class="font-lexend font-semibold text-subtitle text-[#231f20] text-center">${project.name}</h2>
-                        <button class="close-button text-3xl text-gray-500 hover:text-gray-700">&times;</button>
+                    <div class="flex justify-between items-center mb-4">` +
+                        link + 
+                        `<h2 class="font-lexend font-semibold text-subtitle text-[#2e6da8] text-center">${project.name}</h2>
+                        <button class="close-button text-3xl text-gray-500 hover:text-[#2e6da8] cursor-pointer">&times;</button>
                     </div>
-                    <p class="font-lexend font-regular md:text-body text-mobile text-[#494949] mb-4">${project.description}</p>
+                    <div class="w-full h-1/3 mb-4 justify-center">
+                        <img src="img/logo.png" alt="${project.name}" class="float-left mr-4 mb-2 object-contain"/>
+                        <p class="font-lexend font-regular sm:text-body text-mobile text-[#494949] mb-4">${project.description}</p>
+                    </div>
                 `;
                 document.body.appendChild(popup);
 
                 const closeButton = popup.querySelector('.close-button') as HTMLElement;
                 closeButton.onclick = () => {
-                    document.body.removeChild(overlay);
-                    document.body.removeChild(popup);
-                    if (onClose) onClose();
+                    document.body.getElementsByClassName('popup')[0].classList.add('animate-fade');
+                    //time out to allow animation to complete before removing from DOM
+                    setTimeout(() => {
+                        if (document.body.contains(popup)) {
+                            document.body.removeChild(overlay);
+                            document.body.removeChild(popup);
+                            if (onClose) onClose();
+                        }
+                    }, 150);
                 };
             }
         })
@@ -74,6 +86,8 @@ function makePopup(id: number, onClose?: () => void) {
 }
 
 const { width, height } = findWindowSize();
+
+const maxBalls = 5; // Maximum number of balls in the simulation
 
 
 export default function sketch(p5: any) {
@@ -90,27 +104,32 @@ export default function sketch(p5: any) {
     let mouseControl = true; // Flag to enable/disable mouse control
 
     p5.preload = () => {
-        //Preloads images of projects for use in order of magnitude chosen, further development would see the size of the balls be dictated by project size
-        img.push(p5.loadImage('/img/proj_1.png'))
-        img.push(p5.loadImage('/img/proj_2.png'))
-        img.push(p5.loadImage('/img/proj_3.png'))
-        img.push(p5.loadImage('/img/proj_4.png'))
-        img.push(p5.loadImage('/img/proj_5.png'))
+        //Preloads images to represent projects on ball objects.
+        for(let i = 0; i < maxBalls; i++) {
+            img.push(p5.loadImage('img/proj_' + (i + 1) + '.png'));
+        }
+        //Preload images for use in popups
+
     }
 
     p5.setup = () => {
         mainCanvas = p5.createCanvas(width, height, p5.WEBGL);  
         grid = drawBackground(p5);
         p5.frameRate(60);
-        for(let i = 0; i < 5; i++) {
-            // Randomize ball size and position
+        for(let i = 0; i < maxBalls; i++) {
+            // make balls have defined sizes from the sizes array, but random positions
             const r = sizes[i];
             const x = p5.random(r, p5.width - r);
             const y = p5.random(r, p5.height - r);
             // Create a new ball with random size and position
             const ball = new Ball(x, y, r, img[i], i);
-            ball.mouseOverSet(() => {if(!mouseControl) return; p5.strokeWeight(4)}); // Set mouse over effect to draw vignette, fails if mouseControl is disabled
+            ball.mouseOverSet(() => {p5.strokeWeight(4)}); // Set mouse over effect to draw vignette, fails if mouseControl is disabled
+            const startVx = p5.random(-4, 4);
+            const startVy = p5.random(-4, 4);
+            ball.setVelocity(startVx, startVy);
             balls.push(ball);
+            makePopup(5, () => {mouseControl = true;}); // Create welcome popup on load, re-enables mouse control on close
+            mouseControl = false; // Disable mouse control while popup is open
         }
     };
 
@@ -154,7 +173,6 @@ export default function sketch(p5: any) {
             makePopup(balls.peek(interacted).id, () => {mouseControl = true;});
             mouseControl = false; // Disable mouse control while popup is open
             interacted = -1; // Reset interacted index
-
             return;
         }
         const ball = balls.peek(interacted);
@@ -175,7 +193,16 @@ export default function sketch(p5: any) {
         }
 
         resizeTimer = setTimeout(() => {
+            //call find window size to reset array of sizes
+            findWindowSize();
             drawBackground(p5);
+            let reverse = sizes.reverse();
+            for (let i = 0; i < balls.getLength(); i++) {
+                const ball = balls.peek(i);
+                const r = reverse[i];
+                ball.recalibrate(r); // Resize ball and recalculate mass
+                balls.replace(i, ball);
+            }
             resizeTimer = null;
         }, 200); // Delay to allow for resizing
     };
@@ -190,7 +217,7 @@ export default function sketch(p5: any) {
             }
             wallCollision(ball);
             ball.move(friction);
-            ball.display(p5);
+            ball.display(p5, mouseControl);
             balls.replace(i, ball);
         }
     }

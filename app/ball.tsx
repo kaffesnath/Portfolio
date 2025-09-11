@@ -30,8 +30,15 @@ export default class Ball{
         // apply friction
         this.vx *= friction;
         this.vy *= friction;
+        // update position based on velocity
         this.position.push([pos[0] + this.vx, pos[1] + this.vy]);
 
+    }
+
+    recalibrate(r: number) {
+        //resize the ball and recalculate mass
+        this.r = r;
+        this.m = Math.floor(Math.PI * r * r / 1000);
     }
 
     mouseOverSet(func: Function) {
@@ -40,10 +47,10 @@ export default class Ball{
     }
         
 
-    display(p5: any) {
+    display(p5: any, mouseControl: boolean) {
         const pos = this.position.peek(0);
         // if mouse is over the ball, call the mouseOver function
-        if (this.mouseOver && p5.dist(p5.mouseX, p5.mouseY, pos[0], pos[1]) < this.r || this.interaction) {
+        if (this.mouseOver && mouseControl && p5.dist(p5.mouseX, p5.mouseY, pos[0], pos[1]) < this.r || this.interaction) {
             this.mouseOver();
         } else {
             p5.strokeWeight(2);
@@ -53,10 +60,10 @@ export default class Ball{
     }
 
     setVelocity(vx: number, vy: number) {
-        if (Math.abs(vx) < 0.1) {
+        if (Math.abs(vx) < 0.2) {
             vx = 0;
         }
-        if (Math.abs(vy) < 0.1) {
+        if (Math.abs(vy) < 0.2) {
             vy = 0;
         }
         this.vx += vx;
