@@ -47,12 +47,12 @@ function makePopup(id: number, onClose?: () => void) {
                 if (document.querySelector('.popup')) return;
                 if (document.querySelector('.overlay')) return;
                 const overlay = document.createElement('div');
-                overlay.className = 'overlay fixed inset-0 bg-white/30 backdrop-blur-xs z-40';
+                overlay.className = 'overlay fixed inset-0 bg-white/10 animate-blur z-40';
                 document.body.appendChild(overlay);
 
                 // Create popup element
                 const popup = document.createElement('div');
-                popup.className = 'popup fixed top-1/2 left-1/2 transform bg-[#e9e9e9] rounded-lg shadow-lg p-6 w-11/12 h-8/12 max-w-4xl z-50 animate-rise';
+                popup.className = 'popup fixed top-1/2 left-1/2 transform bg-[#e9e9e9] rounded-lg shadow-lg p-6 w-11/12 h-10/12 sm:h-8/12 max-w-4xl z-50 animate-rise';
                 //uses linktype to determine whether link should show, and which icon to use
                 const link = project.linktype === 2 ? '' :  `<a class="text-3xl hover:text-[#2e6da8]" href="${project.link}" target="_blank" rel="noopener noreferrer">${project.linktype === 0 ? githubIcon : linkedinIcon}</a>`
                 popup.innerHTML = `
@@ -62,8 +62,11 @@ function makePopup(id: number, onClose?: () => void) {
                         <button class="close-button text-3xl text-gray-500 hover:text-[#2e6da8] cursor-pointer">&times;</button>
                     </div>
                     <div class="w-full h-1/3 mb-4 justify-center">
-                        <img src="img/logo.png" alt="${project.name}" class="float-left mr-4 mb-2 object-contain"/>
-                        <p class="font-lexend font-regular sm:text-body text-mobile text-[#494949] mb-4">${project.description}</p>
+                        <figure class="max-w-[10rem] sm:max-w-[12rem] md:max-w-[16rem] lg:max-w-[18rem] xl:max-w-[20rem] w-full float-right ml-4 mb-4">
+                            <img src="${project.image}" alt="${project.name}" class="rounded-lg mb-2 object-contain w-full h-auto"/>
+                            <figcaption class="font-lexend font-regular italic text-xs md:text-sm text-center text-[#494949]">${project.imagecaption}</figcaption>
+                        </figure>
+                        <p class="font-lexend font-regular sm:text-[1.6vh] md:text-[1.7vh] text-[1.5vh] text-[#494949] mb-4">${project.description}</p>
                     </div>
                 `;
                 document.body.appendChild(popup);
@@ -71,6 +74,7 @@ function makePopup(id: number, onClose?: () => void) {
                 const closeButton = popup.querySelector('.close-button') as HTMLElement;
                 closeButton.onclick = () => {
                     document.body.getElementsByClassName('popup')[0].classList.add('animate-fade');
+                    document.body.getElementsByClassName('overlay')[0].classList.add('animate-unblur');
                     //time out to allow animation to complete before removing from DOM
                     setTimeout(() => {
                         if (document.body.contains(popup)) {
@@ -200,7 +204,7 @@ export default function sketch(p5: any) {
             for (let i = 0; i < balls.getLength(); i++) {
                 const ball = balls.peek(i);
                 const r = reverse[i];
-                ball.recalibrate(r); // Resize ball and recalculate mass
+                ball.recalibrate(r, width, height); // Resize ball and recalculate mass
                 balls.replace(i, ball);
             }
             resizeTimer = null;

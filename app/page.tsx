@@ -44,7 +44,7 @@ export default function Page() {
         <div id="mainBody" className="h-dvh w-full overflow-hidden relative">
             <div className="font-lexend text-title font-semibold flex h-1/10 bg-[#f3f3f3] text-[#231f20] items-center justify-center">Nathan Kaffes.</div>
             {/* float right linkedin and github icons for ease of access */}
-            <div className="absolute top-6.5 right-4 z-10 flex h-1/10items-center justify-center">
+            <div className="absolute top-1/35 right-4 z-10 flex h-1/10items-center justify-center">
                 <a href="https://github.com/kaffesnath" target="_blank" rel="noopener noreferrer" className="text-3xl text-[#231f20] hover:text-[#2e6da8]">
                     <FontAwesomeIcon icon={faSquareGithub} className="h-8 w-8" />
                 </a>

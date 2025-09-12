@@ -3,8 +3,6 @@
     --font-lexend: 'Lexend', sans-serif;
     --text-title: 3vh ;
     --text-subtitle: 2vh;
-    --text-body: 1.75vh ;
-    --text-mobile: 3vw ;
 }
 @keyframes rise {
   0% {
@@ -28,11 +26,35 @@
   }
 }
 
+@keyframes blur {
+    0% {
+        backdrop-filter: blur(0px);
+    }
+    100% {
+        backdrop-filter: blur(var(--blur-xs));
+    }
+}
+
+@keyframes unblur {
+    0% {
+        backdrop-filter: blur(var(--blur-xs));
+    }
+    100% {
+        backdrop-filter: blur(0px);
+    }
+}
+
 .animate-rise {
   animation: rise 0.4s ease-out forwards;
 }
 .animate-fade {
   animation: fade 0.15s ease-out forwards;
+}
+.animate-blur {
+    animation: blur 0.4s ease-out forwards;
+}
+.animate-unblur {
+    animation: unblur 0.15s ease-out forwards;
 }
 @import "tailwindcss";
 @tailwind base;

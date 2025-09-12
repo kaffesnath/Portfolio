@@ -35,10 +35,25 @@ export default class Ball{
 
     }
 
-    recalibrate(r: number) {
+    recalibrate(r: number, width: number, height: number) {
         //resize the ball and recalculate mass
         this.r = r;
         this.m = Math.floor(Math.PI * r * r / 1000);
+        //ensure ball is within bounds
+        const pos = this.position.peek(0);
+        let x = pos[0];
+        let y = pos[1];
+        if (x - r < 0) {
+            x = r;
+        } else if (x + r > width) {
+            x = width - r;
+        }
+        if (y - r < 0) {
+            y = r;
+        } else if (y + r > height) {
+            y = height - r;
+        }
+        this.position.push([x, y]);
     }
 
     mouseOverSet(func: Function) {
