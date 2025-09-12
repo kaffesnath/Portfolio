@@ -1,0 +1,59 @@
+{
+    "projects": [
+        {
+            "id": 0,
+            "name": "Chaps Challenge",
+            "description": "This project was taken on during my second year of university for the SWEN225 course. The goal was to develop a game in Java in a group using Object Oriented design processes and Java 8 features like streams and lambda expressions. The project was split into modular sections where each member of the group was responsible for a different aspect of the project. <br><br> My task was to develop the Renderer module, which draws the map onto the screen using camera controls and layering of tiles. This module was also tasked with creating pre-made lambda expressions for runnable sounds to give to the Domain module, which would play these sounds in required sections of the gameplay. <br><br> This project taught invaluable experience in Project Management, Team Building but also fundamental Development tasks like Project Design and Intention, Version Control and basic Game Development.",
+            "image": "img/popup_1.png",
+            "imagecaption": "Chaps Challenge Project Structure Diagram",
+            "link": "https://github.com/kaffesnath/Chaps-Challenge",
+            "linktype": 0
+        },
+        {
+            "id": 1,
+            "name": "About Me",
+            "description": "My name is Nathan Kaffes and I am a Software Engineer based in Wellington, New Zealand. I have a passion for developing innovative and unique solutions including but not limited to Machine Learning Techniques, Full Stack Development and Database Solutions. <br><br> I enjoy socialising with friends and family, playing video games and going to the gym are big social events for myself and make up a bulk of my free time. Software became an important part of my life early on as the world evolved with me and solidified my love for technology and its applications.",
+            "image": "img/proj_2.png",
+            "imagecaption": "This is me! A picture from my recent trip to Japan.",
+            "link": "https://www.linkedin.com/in/nathan-kaffes/",
+            "linktype": 1
+        },
+        {
+            "id": 2,
+            "name": "Image Classifier CNN",
+            "description": "This project was taken on during my final year of University for the AIML421 course. The goal was to develop a Convolutional Neural Network (CNN) that could accurately classify images of red produce, specifically cherries, strawberries, and tomatoes. <br><br> The project involved several key steps, including an exploratory data analysis and pruning procedure, preprocessing, model development, training, and evaluation. Particularly, the data analysis and pruning was difficult as there were images that would hinder the learning capabilities of the model present in the dataset, an example of which is shown here. <br><br> The model was developed in Python using the TensorFlow and PyTorch libraries. The model achieved a high accuracy rate on the validation set. The final model was then tested on a separate test set to evaluate its performance in real-world scenarios to great success. More details and the complete code can be found on the linked Github repository.",
+            "image": "img/popup_4.png",
+            "imagecaption": "An example of why pruning the dataset was important.",
+            "link": "https://github.com/kaffesnath/AIML421-Capstone",
+            "linktype": 0
+        },
+        {
+            "id": 3,
+            "name": "Realm Render",
+            "description": "This project was undertaken in my penultimate year of University for the ENGR302 course. The goal was to produce a project in a group, helmed by students in their entirety. Realm Render is a web application that allows users to randomly generate a dungeon for use within the tabletop game Dungeons and Dragons, users can interact with tokens and edit character sheets to have them take on the users roles. <br><br> My main contributions to this project were the implementation of P5.JS as a renderer for the map, as well as the character token control and the attached character sheets for each token. <br><br> This project not only taught invaluable experience in Project Management, Team Building but also fundamental Development tasks like Project Design and Intention, Web Development, Version Control and Database Management and Server Hosting.",
+            "image": "img/popup_3.png",
+            "imagecaption": "Example of the Character Sheet I worked on.",
+            "link": "https://github.com/kaffesnath/ENGR302-Project",
+            "linktype": 0
+        },
+        {
+            "id": 4,
+            "name": "Sentiment Analysis using Genetic Programming",
+            "description": "This project was a full year project taken on in my final year of University for the ENGR489 course. This project was focused on the Natural Language Processing problem of Sentiment Analysis was to be attempted to be solved using Genetic Programming (GP) to produce a more interpretable result than standard methods, eg. Convolutional Neural Networks, or CNNS. <br><br> The main difficulty with this project was finding past research on GP for Sentiment Analysis and synthesising it to develop a unique solution that performed comparably to standard methods. The project was developed using Python with the DEAP library and multiple tools used for Sentiment Analysis, namely the VADER lexicon and Scikit-Learn models for feature generation. The model developed showed promising results but needed further development to improve accuracy. The complete code, along with the research paper and presentation linked to this project can be found on the linked Github repository.",
+            "image": "img/popup_5.png",
+            "imagecaption": "Example of a generated tree used for sentiment classification.",
+            "link": "https://github.com/kaffesnath/ENGR489_Project",
+            "linktype": 0
+        },
+        {
+            "id": 5,
+            "name": "Welcome to my Portfolio",
+            "description": "This portfolio was developed to showcase my skills and projects as a Software Engineer. It was built using modern web development technologies including React, TypeScript, P5.JS and Tailwind CSS to create a unique and interactive design. Each ball object houses a project within, this portfolio doubles as an interactive portfolio as well as a physics simulation. <br><br> To control the objects in the canvas, click and drag your mouse on a ball to fire them around and into others, or simply click on the ball to view the project in more detail, all projects have a link to the Github repository on the popup. I hope you enjoy exploring my work as much as I enjoyed creating it.",
+            "image": "img/popup_2.png",
+            "imagecaption": "A visualisation on how to use this portfolio.",
+            "link": "",
+            "linktype": 2
+        }
+    ]
+
+}
