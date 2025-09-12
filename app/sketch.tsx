@@ -6,9 +6,10 @@ import Queue from './queue';
 import { icon } from '@fortawesome/fontawesome-svg-core' // Importing icons
 import { faSquareGithub } from '@fortawesome/free-brands-svg-icons'
 import { faLinkedin } from '@fortawesome/free-brands-svg-icons'
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 // Constants for the sketch, json for information and the icons for links
-const projectJsonPath = '/json/projects.json'; 
+const projectJsonPath = basePath + 'json/projects.json'; 
 const githubIcon = icon(faSquareGithub).html[0];
 const linkedinIcon = icon(faLinkedin).html[0];
 

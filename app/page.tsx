@@ -53,7 +53,7 @@ export default function Page() {
                 </a>
             </div>
             {/* P5 canvas container */}
-            <div ref={containerRef} className="touch-none overflow-hidden h-screen relative">
+            <div ref={containerRef} className="overflow-hidden h-screen relative">
                 <ReactP5Wrapper sketch={sketch}/>
             </div>
         </div>
