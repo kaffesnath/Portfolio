@@ -3,9 +3,6 @@ const isProd = process.env.NODE_ENV === 'production';
 
 module.exports = {
   output: 'export',
-  basePath: isProd ? '/Portfolio': '',
-  distDir: isProd? 'out/Portfolio' : '',
-  trailingSlash: true,
   typescript: {
     ignoreBuildErrors: true,
   },
