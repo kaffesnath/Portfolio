@@ -6,3 +6,5 @@ The intent of this project is to provide a more interesting and engaging experie
 By engaging the user through interaction, the user will engage better with the subject matter. <br />
 Further development of this portfolio will include implementation of a design that incorporates the sandbox window naturally into viewing of projects, <br />
 as well as implementation of a sleek and flowy design that attempts to synthesise different Web Development processes <br />
+
+This project is deployed at https://nathankaffes-portfolio.com hosted on Cloudflare Pages
